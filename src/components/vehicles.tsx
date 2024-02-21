@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { TextField, Button, Grid, Paper, Typography } from '@mui/material';
+import { Delete, Edit  } from '@mui/icons-material';
+import { red } from '@mui/material/colors';
 
 interface Veiculo {
   id: number;
@@ -73,18 +75,16 @@ const Vehicles: React.FC = () => {
                 {veiculo.marca} - {veiculo.placa}
               </Typography>
               <Button
-                variant="contained"
-                color="secondary"
-                onClick={() => handleExcluirVeiculo(veiculo.id)}
-              >
-                Excluir
-              </Button>
-              <Button
-                variant="contained"
-                color="primary"
+                /* variant="contained"
+                color="primary" */
                 onClick={() => console.log(`Editar veículo com ID ${veiculo.id}`)}
               >
-                Alterar
+                 <Edit  sx={{ color: red[900] }} />
+              </Button>
+              <Button
+                onClick={() => handleExcluirVeiculo(veiculo.id)}
+              >
+                <Delete  sx={{ color: red[900] }} />
               </Button>
             </Paper>
           </Grid>

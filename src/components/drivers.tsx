@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Grid, Paper, TextField, Typography, MenuItem } from '@mui/material';
+import { Delete, Edit  } from '@mui/icons-material';
+import { red } from '@mui/material/colors';
 
 interface Veiculo {
   id: number;
@@ -108,18 +110,16 @@ const Drivers: React.FC = () => {
                 {motorista.nome} - {motorista.documento} - Veículo: {motorista.veiculoId || 'Nenhum'}
               </Typography>
               <Button
-                variant="contained"
-                color="secondary"
-                onClick={() => handleExcluirMotorista(motorista.id)}
-              >
-                Excluir
-              </Button>
-              <Button
-                variant="contained"
-                color="primary"
+                /* variant="contained"
+                color="primary" */
                 onClick={() => handleAlterarMotorista(motorista.id)}
               >
-                Alterar
+                 <Edit  sx={{ color: red[900] }} />
+              </Button>
+              <Button
+                onClick={() => handleExcluirMotorista(motorista.id)}
+              >
+                <Delete sx={{ color: red[900] }}/>
               </Button>
             </Paper>
           </Grid>
