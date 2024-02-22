@@ -1,10 +1,13 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState, createContext } from 'react'
-import { DataGrid, GridRowSelectionModel  } from '@mui/x-data-grid';
+import { DataGrid, GridActionsCellItem, GridRowSelectionModel   } from '@mui/x-data-grid';
 import Box from '@mui/material/Box';
 import Search from '@mui/icons-material/Search';
-import { TextField, Typography } from "@mui/material";
+import { Dialog, DialogContent, DialogTitle, IconButton, TextField, Typography } from "@mui/material";
 import { Selected } from './selected';
+import { Close, Edit  } from '@mui/icons-material';
+import Drivers from './drivers';
 
 interface Veiculo {
   id: number;
@@ -13,20 +16,18 @@ interface Veiculo {
   placa: string;
 }
 
-
-const columns = [
-  { field: 'id', headerName: 'ID', width: 120 },
-  { field: 'nome', headerName: 'Nome', width: 430 },
-  { field: 'documento', headerName: 'Documento', width: 260 },
-  { field: 'vinculo', headerName: 'Vinculo', type: 'boolean', width: 130 },
-  { field: 'veiculoId', headerName: 'Veículo', width: 130 },
-];
-
+interface Motorista {
+  id: number;
+  nome: string;
+  documento: string;
+  veiculoId: number | null;
+}
 
 export const DriverContext = createContext<any | null>(null);
 export const VehicleContext = createContext<any | null>(null);
 
-export default function DataTable() {
+const DataTable: React.FC = () => {
+  const [selectedRowId, setSelectedRowId] = useState<number | null>(null);
  // const [motoristas, setMotoristas] = useState<Motorista[]>([]);
   const [selectedRow, setSelectedRow] = useState<any | null>(null);
   const [selectedDriver, setSelectedDriver] = useState('');
@@ -36,6 +37,9 @@ export default function DataTable() {
     const storedMotoristas = localStorage.getItem('motoristas');
     return storedMotoristas ? JSON.parse(storedMotoristas) : [];
   });
+  const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const [forceUpdate, setForceUpdate] = useState<number>(0); // Estado para forçar a atualização
+
 
   
   // Carregar motoristas do localStorage quando o componente é montado
@@ -50,7 +54,7 @@ export default function DataTable() {
       }));
       setMotoristas(updatedMotoristas);
     }
-  }, []);
+  }, [forceUpdate]); 
 
   //atualiza motorista e placa ao selecionar linha da tabela
   useEffect(() => {
@@ -79,6 +83,40 @@ export default function DataTable() {
     row.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
     row.documento.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  
+   // Função para abrir o popup do componente Drivers ao clicar em "Editar"
+   const handleEditClick = (row: Motorista) => {
+    setSelectedRow(row);
+    setOpenDialog(true); // Abre o modal ao clicar em "Editar"
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false); // Fecha o modal
+    setSelectedRow(null);
+    setForceUpdate((prev) => prev + 1); // Incrementa o estado para forçar a atualização
+  };
+  
+const columns = [
+  { field: 'id', headerName: 'ID', width: 120 },
+  { field: 'nome', headerName: 'Nome', width: 430 },
+  { field: 'documento', headerName: 'Documento', width: 260 },
+  { field: 'vinculo', headerName: 'Vinculo', type: 'boolean', width: 130 },
+  {
+    field: 'actions',
+    type: 'actions',
+    width: 100,
+    getActions: (params: { row: Motorista }) => [
+      <GridActionsCellItem
+        icon={<Edit />}
+        label="Edit"
+        onClick={() => handleEditClick(params.row)}
+      />,
+    ],
+  },
+  { field: 'veiculoId', headerName: 'Veículo', width: 130 },
+];
+
+
 
   return (
     
@@ -105,7 +143,7 @@ export default function DataTable() {
       ) : (
         <DataGrid
           rows={filteredRows}
-          columns={columns}          
+          columns={columns}                  
           columnVisibilityModel={{ //esconde a coluna do veiculo
             veiculoId: false,
           }}
@@ -128,6 +166,35 @@ export default function DataTable() {
           }}
         />
       )}
+
+      
+      {/* Modal para exibir o componente Drivers */}
+      <Dialog open={openDialog} onClose={handleCloseDialog} fullWidth maxWidth="md">
+        <DialogTitle>Editar Motorista
+        <IconButton
+            aria-label="Fechar"
+            onClick={handleCloseDialog}
+            sx={{ position: 'absolute', right: 8, top: 8 }}
+          >
+            <Close />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+          {selectedRow && (
+            <DriverContext.Provider value={selectedRow}>
+              <Drivers />
+            </DriverContext.Provider>
+          )}
+        </DialogContent>
+        {/* <DialogActions>
+          <Button onClick={handleCloseDialog} color="primary">
+            Fechar
+          </Button>
+        </DialogActions> */}
+      </Dialog>
+      
     </div>
   );
 } 
+
+export default DataTable;

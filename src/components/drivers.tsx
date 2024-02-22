@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Button, Grid, Paper, TextField, Typography, MenuItem } from '@mui/material';
 import { Delete, Edit  } from '@mui/icons-material';
 import { red } from '@mui/material/colors';
+import { DriverContext } from './dataTable'; // Importa o contexto DriverContext
 
 interface Veiculo {
   id: number;
@@ -17,6 +18,8 @@ interface Motorista {
 }
 
 const Drivers: React.FC = () => {
+  const selectedDriver = useContext(DriverContext); // Acesse o motorista selecionado pelo contexto
+
   const [nome, setNome] = useState<string>('');
   const [documento, setDocumento] = useState<string>('');
   const [veiculoId, setVeiculoId] = useState<number | null>(null);
@@ -28,6 +31,17 @@ const Drivers: React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [veiculos, setVeiculos] = useState<Veiculo[]>([]);
   const [editingMotoristaId, setEditingMotoristaId] = useState<number | null>(null);
+
+
+  // Atualiza os campos do formulário quando vem da home
+  useEffect(() => {
+    if (selectedDriver) {
+      setNome(selectedDriver.nome);
+      setDocumento(selectedDriver.documento);
+      setVeiculoId(selectedDriver.veiculoId);
+      setEditingMotoristaId(selectedDriver.id);
+    }
+  }, [selectedDriver]);
 
 
   // Carregar motoristas do localStorage quando o componente é montado
