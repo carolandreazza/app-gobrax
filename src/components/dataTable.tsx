@@ -27,7 +27,7 @@ export const DriverContext = createContext<any | null>(null);
 export const VehicleContext = createContext<any | null>(null);
 
 const DataTable: React.FC = () => {
-  const [selectedRowId, setSelectedRowId] = useState<number | null>(null);
+  //const [selectedRowId, setSelectedRowId] = useState<number | null>(null);
  // const [motoristas, setMotoristas] = useState<Motorista[]>([]);
   const [selectedRow, setSelectedRow] = useState<any | null>(null);
   const [selectedDriver, setSelectedDriver] = useState('');
