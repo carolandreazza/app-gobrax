@@ -17,6 +17,7 @@ interface Motorista {
   veiculoId: number | null;
 }
 
+
 const Drivers: React.FC = () => {
   const selectedDriver = useContext(DriverContext); // Acesse o motorista selecionado pelo contexto
 
@@ -42,7 +43,7 @@ const Drivers: React.FC = () => {
       setEditingMotoristaId(selectedDriver.id);
     }
   }, [selectedDriver]);
-
+  
 
   // Carregar motoristas do localStorage quando o componente é montado
   useEffect(() => {

@@ -186,11 +186,6 @@ const columns = [
             </DriverContext.Provider>
           )}
         </DialogContent>
-        {/* <DialogActions>
-          <Button onClick={handleCloseDialog} color="primary">
-            Fechar
-          </Button>
-        </DialogActions> */}
       </Dialog>
       
     </div>
