@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Grid, Paper, TextField, Typography, MenuItem } from '@mui/material';
 import { Delete, Edit  } from '@mui/icons-material';
 import { red } from '@mui/material/colors';
@@ -20,9 +20,34 @@ const Drivers: React.FC = () => {
   const [nome, setNome] = useState<string>('');
   const [documento, setDocumento] = useState<string>('');
   const [veiculoId, setVeiculoId] = useState<number | null>(null);
-  const [motoristas, setMotoristas] = useState<Motorista[]>([]);
+  //const [motoristas, setMotoristas] = useState<Motorista[]>([]);
+  const [motoristas, setMotoristas] = useState<Motorista[]>(() => {
+    const storedMotoristas = localStorage.getItem('motoristas');
+    return storedMotoristas ? JSON.parse(storedMotoristas) : [];
+  });
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [veiculos, setVeiculos] = useState<Veiculo[]>([]);
+  const [editingMotoristaId, setEditingMotoristaId] = useState<number | null>(null);
+
+
+  // Carregar motoristas do localStorage quando o componente é montado
+  useEffect(() => {
+    const storedMotoristas = localStorage.getItem('motoristas');
+    if (storedMotoristas) {
+      setMotoristas(JSON.parse(storedMotoristas));
+      const storedVeiculos = localStorage.getItem('veiculos');
+      if (storedVeiculos) {
+        setVeiculos(JSON.parse(storedVeiculos));
+      }
+    }
+  }, []);
+
+
+  // Salvar motoristas no localStorage sempre que for atualizado
+  useEffect(() => {
+    localStorage.setItem('motoristas', JSON.stringify(motoristas));
+  }, [motoristas]);
+
 
   const handleCadastroMotorista = () => {
     if (nome.trim() === '' || documento.trim() === '') {
@@ -47,9 +72,34 @@ const Drivers: React.FC = () => {
     setMotoristas(novosMotoristas);
   };
 
-  const handleAlterarMotorista = (id: number) => {
-    // Implemente a lógica de alteração do motorista conforme necessário
-    console.log(`Alterar motorista com ID ${id}`);
+
+  const handleEditarMotorista = (motorista: Motorista) => {
+    setNome(motorista.nome);
+    setDocumento(motorista.documento);
+    setVeiculoId(Number(motorista.veiculoId));
+    setEditingMotoristaId(motorista.id);
+  };
+
+  const handleSalvarEdicao = () => {
+    if (editingMotoristaId === null) return;
+
+    const novosMotoristas = motoristas.map(motorista => {
+      if (motorista.id === editingMotoristaId) {
+        return {
+          ...motorista,
+          nome,
+          documento,
+          veiculoId
+        };
+      }
+      return motorista;
+    });
+
+    setMotoristas(novosMotoristas);
+    setEditingMotoristaId(null);
+    setNome('');
+    setDocumento('');
+    setVeiculoId(null);
   };
 
   const handleVeiculoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -96,29 +146,23 @@ const Drivers: React.FC = () => {
         <Button
           variant="contained"
           color="primary"
-          onClick={handleCadastroMotorista}
+          onClick={editingMotoristaId !== null ? handleSalvarEdicao : handleCadastroMotorista}
         >
-          Cadastrar Motorista
+          {editingMotoristaId !== null ? 'Salvar Edição' : 'Cadastrar Motorista'}
         </Button>
       </Paper>
 
       <Grid container spacing={2}>
         {motoristas.map((motorista) => (
           <Grid item xs={12} key={motorista.id}>
-            <Paper style={{ padding: 10 }}>
+            <Paper style={{ padding: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <Typography variant="subtitle1">
                 {motorista.nome} - {motorista.documento} - Veículo: {motorista.veiculoId || 'Nenhum'}
               </Typography>
-              <Button
-                /* variant="contained"
-                color="primary" */
-                onClick={() => handleAlterarMotorista(motorista.id)}
-              >
-                 <Edit  sx={{ color: red[900] }} />
+              <Button onClick={() => handleEditarMotorista(motorista)}>
+                 <Edit sx={{ color: 'primary' }} />
               </Button>
-              <Button
-                onClick={() => handleExcluirMotorista(motorista.id)}
-              >
+              <Button onClick={() => handleExcluirMotorista(motorista.id)}>
                 <Delete sx={{ color: red[900] }}/>
               </Button>
             </Paper>
