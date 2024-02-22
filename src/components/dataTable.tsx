@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogTitle, IconButton, TextField, Typography }
 import { Selected } from './selected';
 import { Close, Edit  } from '@mui/icons-material';
 import Drivers from './drivers';
+import { Player } from '@lottiefiles/react-lottie-player';
 
 interface Veiculo {
   id: number;
@@ -138,8 +139,19 @@ const columns = [
         />
       </Box>
 
+      {/* <Player src={'https://assets1.lottiefiles.com/packages/lf20_myejiggj.json'} */}
+      
+
       {filteredRows.length === 0 ? (
-        <Typography variant="subtitle1" align="center">Nenhum dado encontrado.</Typography>
+       <div>
+         <Typography variant="subtitle1" align="center">Nenhum dado encontrado. Inicie cadastrando motoristas.</Typography>
+        <Player src={'https://lottie.host/cdedf4ac-93cc-4cb2-a873-e14e30a7d5c1/gAe896Cx2G.json'}
+          className='player'
+          loop
+          autoplay
+          style={{ height: '300px', width: '300px' }}
+        />
+       </div>
       ) : (
         <DataGrid
           rows={filteredRows}
