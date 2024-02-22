@@ -138,9 +138,7 @@ const columns = [
           onChange={(e) => setSearchTerm(e.target.value)}
         />
       </Box>
-
-      {/* <Player src={'https://assets1.lottiefiles.com/packages/lf20_myejiggj.json'} */}
-      
+     
 
       {filteredRows.length === 0 ? (
        <div>
